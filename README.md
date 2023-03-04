@@ -1,4 +1,4 @@
-# anftv_vuejs
+# AFRICA NEWS FOCUS WEBSITE, VUE JS
 
 ## Project setup
 ```

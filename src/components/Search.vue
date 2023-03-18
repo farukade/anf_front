@@ -1,12 +1,12 @@
 <template>
-  <div class="w-full self-center">
+  <div class="w-full self-center z-50">
     <div class="flex justify-start mt-20 text-white text-2xl w-full">
       <div class="self-center focus:border-anfDeepBlue p-2 w-4/5"></div>
       <i @click="toggleSearch" class="text-left fa-solid fa-xmark"></i>
     </div>
-    <div class="flex mt-8 w-full justify-center align-center w-screen">
+    <div class="z-40 flex mt-8 w-full justify-center align-center w-screen">
       <input
-        class="self-center focus:border-anfDeepBlue rounded-sm p-2 w-1/2"
+        class="self-center z-50 focus:border-anfDeepBlue rounded-sm p-2 w-1/2"
         type="text"
         name="search"
         id=""

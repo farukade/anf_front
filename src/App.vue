@@ -4,7 +4,7 @@
       <Login />
     </div>
     <div v-else>
-      <Navbar />
+      <Navbar class="z-50" />
       <router-view />
       <Footer />
     </div>

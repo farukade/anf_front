@@ -8,7 +8,7 @@
       >
         <div class="self-center m-5 w-1/2">
           <h1 class="text-white text-3xl h-10">
-            {{ truncate(current.content, 100) }}
+            {{ truncate(current.content || "", 100) }}
           </h1>
         </div>
         <div

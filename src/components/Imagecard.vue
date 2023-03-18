@@ -1,7 +1,7 @@
 <template>
   <div>
     <iframe
-      class="border-t-[3px] border-anfVeryDeepBlue w-full min-h-[200]"
+      class="border-t-[3px] border-anfVeryDeepBlue w-full h-full min-h-60"
       :src="src"
       alt=""
     ></iframe>

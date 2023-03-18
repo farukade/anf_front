@@ -1,5 +1,8 @@
 export const truncate = (str, len = 200) => {
 	let newStr = "";
+	if (!str.length) {
+		return str;
+	}
 	let shortStr = str.split("").splice(0, len).join("");
 	if (str.length > len) {
 		newStr = `${shortStr}...`;

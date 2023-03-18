@@ -5,10 +5,10 @@
         {{ heading }}
       </h1>
     </div>
-    <router-link :key="item.id" :to="''" v-for="item of news">
-      <Imagecard class="" :src="item.media" v-show="isTopStory" />
+    <router-link class="" :key="item.id" :to="''" v-for="item of news">
+      <Imagecard class="h-72" :src="item.media" v-show="isTopStory" />
       <hr />
-      <Newslink :text="truncate(item.content)" :id="item.id" />
+      <Newslink :text="truncate(item.content)" :id="item._id" />
     </router-link>
   </section>
 </template>

@@ -1,6 +1,6 @@
 <template class="relative">
   <div>
-    <nav class="z-10 top-0 fixed bg-translucentWhite mx-auto py-1 px-6 w-full">
+    <nav class="z-50 top-0 fixed bg-translucentWhite mx-auto py-1 px-6 w-full">
       <!-- Flex container -->
       <div class="flex items-center justify-between">
         <!-- Logo -->
@@ -64,7 +64,7 @@
     <div v-if="searchOpen" class="fixed bg-searchBg w-screen h-screen">
       <Search
         :toggleSearch="toggleSearch"
-        class="fixed w-screen flex flex-col justify-center align-center top-0 left-0 mt-50"
+        class="z-50 fixed w-screen flex flex-col justify-center align-center top-0 left-0 mt-50"
       />
     </div>
   </div>

@@ -11,6 +11,7 @@
         <div class="hidden lg:flex text-l text-anfDeepBlue flex space-x-6">
           <Link :key="item" v-for="item of menu" :text="item" :link="item" />
         </div>
+        <!-- search and profile -->
         <div class="flex space-x-3">
           <!-- Search -->
           <div
@@ -34,19 +35,28 @@
             ></i>
           </div>
           <!-- Profile -->
-          <div
-            v-if="isAdmin"
-            class="flex cursor-pointer justify-center align-center text-l md:p-2 bg-anfDeepBlue rounded p-1 text-white"
-          >
-            <button class="hidden sm:block md:hidden xl:hidden lg:hidden px-2">
-              Profile
-            </button>
-            <i v-if="!profileOpen" class="fa-solid fa-user"></i>
-            <i
-              v-if="profileOpen"
-              @click="openProfile"
-              class="fa-regular fa-user"
-            ></i>
+          <div>
+            <div
+              v-if="isAdmin"
+              class="flex position-relative cursor-pointer justify-center align-center text-l md:p-2 bg-anfDeepBlue rounded p-1 text-white dropdown"
+            >
+              <button
+                class="hidden sm:block md:hidden xl:hidden lg:hidden px-2"
+                @click="openProfile()"
+              >
+                Profile
+              </button>
+              <i
+                v-if="!profileOpen"
+                @click="openProfile()"
+                class="fa-solid fa-user"
+              ></i>
+              <i
+                v-if="profileOpen"
+                @click="openProfile()"
+                class="fa-regular fa-user"
+              ></i>
+            </div>
           </div>
         </div>
         <!-- Hamburger Icon -->
@@ -88,6 +98,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Link from "./Link.vue";
 import Search from "./Search.vue";
 
@@ -116,9 +127,13 @@ export default {
         this.isClicked = false;
       },
       openProfile: () => {
-        this.profileOpen = !this.profileOpen;
+        this.profileOpen = true;
+        this.$store.commit("updateProfileOpen", true);
       },
     };
+  },
+  computed: {
+    ...mapState([]),
   },
   created() {
     this.menu = [
@@ -133,3 +148,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.profile {
+  background-color: hsl(230, 100%, 48%);
+  color: white;
+}
+</style>

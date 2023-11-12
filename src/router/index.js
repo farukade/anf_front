@@ -22,12 +22,7 @@ const routes = [
 		component: SectionView,
 	},
 	{
-		path: "/admin/login",
-		name: "login",
-		component: LoginView,
-	},
-	{
-		path: "/admin/landing",
+		path: "/admin",
 		name: "admin",
 		component: AdminLanding,
 	},

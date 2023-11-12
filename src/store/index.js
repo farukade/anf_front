@@ -10,6 +10,7 @@ const state = {
 		message: "",
 	},
 	user: null,
+	profileOpen: false,
 	loading: false,
 	isVerified: true,
 };
@@ -36,6 +37,9 @@ const getters = {
 	getIsVerified(state) {
 		return state.isVerified;
 	},
+	getProfileOpen(state) {
+		return state.profileOpen;
+	},
 };
 
 const mutations = {
@@ -53,6 +57,9 @@ const mutations = {
 	},
 	updateIsVerified(state, data) {
 		state.isVerified = data;
+	},
+	updateProfileOpen(state, data) {
+		state.profileOpen = data;
 	},
 };
 

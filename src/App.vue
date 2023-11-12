@@ -2,6 +2,7 @@
   <div :class="{ rand: !$store.getters.getIsVerified }">
     <SuccessModal />
     <FailedModal />
+    <ProfileModal />
     <div
       id="loader"
       class="text-black"
@@ -24,6 +25,7 @@ import Footer from "./components/Footer.vue";
 import Login from "./views/LoginView.vue";
 import SuccessModal from "./components/SuccessModal.vue";
 import FailedModal from "./components/FailedModal.vue";
+import ProfileModal from "./components/ProfileModal.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -34,6 +36,7 @@ export default {
     Login,
     SuccessModal,
     FailedModal,
+    ProfileModal,
   },
   data() {
     return {

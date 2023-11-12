@@ -1,10 +1,33 @@
 <template>
-  <div id="pagination">
-    <a id="first-pagi" :key="first" class="pagi-button"> &lt; &lt; </a>
-    <a id="previous-pagi" :key="previous" class="pagi-button"> &lt; </a>
-    <a id="current-pagi" :key="current" class="pagi-button"> {{ current }} </a>
-    <a id="next-pagi" :key="next" class="pagi-button"> &gt; </a>
-    <a id="last-pagi" :key="last" class="pagi-button"> &gt; &gt; </a>
+  <div class="flex justify-content-between cursor-pointer">
+    <div class="p-2">
+      <span>{{ message }}</span>
+    </div>
+    <ul class="pagination">
+      <li class="page-item" :key="first">
+        <a id="first-pagi" class="page-link"> &lt; &lt; </a>
+      </li>
+      <li class="page-item" :key="previous">
+        <a id="previous-pagi" class="page-link"> &lt; </a>
+      </li>
+      <li class="page-item" :key="currentMinus" v-show="currentMinus > 0">
+        <a id="previous-pagi" class="page-link">{{ currentMinus }} </a>
+      </li>
+      <li class="page-item" :key="current">
+        <a id="current-pagi" class="page-link">
+          {{ current }}
+        </a>
+      </li>
+      <li class="page-item" v-show="currentPlus > 2" :key="currentPlus">
+        <a id="previous-pagi" class="page-link">{{ currentPlus }} </a>
+      </li>
+      <li class="page-item" :key="next">
+        <a id="next-pagi" class="page-link"> &gt; </a>
+      </li>
+      <li class="page-item" :key="last">
+        <a id="last-pagi" class="page-link"> &gt; &gt; </a>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -13,15 +36,31 @@ export default {
   name: "Pagination",
   props: {
     meta: Object,
+    message: String,
   },
   data() {
     return {
-      first: this.meta.first,
-      current: this.meta.current,
-      next: this.meta.next,
-      previous: this.meta.previous,
-      last: this.meta.last,
+      first: 1,
+      current: 1,
+      next: 1,
+      previous: 1,
+      last: 1,
+      currentMinus: 0,
+      currentPlus: 0,
     };
+  },
+  computed() {
+    if (this.meta) {
+      this.current = this.meta.currentPage;
+      this.next =
+        this.meta.totalPages > this.meta.currentPage
+          ? this.meta.currentPage + 1
+          : this.meta.totalPages;
+      this.previous = this.meta.currentPage > 2 ? this.meta.currentPage - 1 : 1;
+      this.last = this.meta.totalPages;
+      this.currentMinus = this.meta.currentPage - 1;
+      this.currentPlus = this.meta.currentPage + 1;
+    }
   },
 };
 </script>

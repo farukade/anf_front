@@ -42,7 +42,7 @@
 
 <script>
 // @ is an alias to /src
-import { logIn, request, verifyToken } from "../utils/utils";
+import { logIn, request, tokenValid } from "../utils/utils";
 
 export default {
   name: "LoginView",
@@ -75,9 +75,7 @@ export default {
           this.$store.commit("updateUser", result);
           this.$store.commit("updateIsVerified", true);
 
-          setTimeout(() => {
-            logIn(result);
-          }, 3000);
+          logIn(result);
           return;
         } else {
           this.$store.commit("updateFailedMessage", {
@@ -109,16 +107,11 @@ export default {
     },
   },
   async mounted() {
-    const response = await verifyToken();
-    if (response.success) {
+    const isValidToken = await tokenValid();
+    if (isValidToken) {
       this.expiredLogin = false;
-      window.location = "/admin/landing";
-      this.$store.commit("updateIsVerified", true);
-      this.$store.commit("updateLoading", false);
     } else {
       this.expiredLogin = true;
-      this.$store.commit("updateIsVerified", false);
-      this.$store.commit("updateLoading", false);
     }
   },
   async created() {},

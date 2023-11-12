@@ -1,87 +1,150 @@
 <template>
-  <div class="modal" id="modal-background" onclick="closeNav()">
-    <div id="close" onclick="closeNav()">
-      <i class="fas fa-times"></i>
-    </div>
-    <div class="news-categories-mobile">
-      <ul id="news-list-container-mobile" class="news-cat-container">
-        <li id="news-mobile">
-          <a href="../index.html" id="news-link">News</a>
-        </li>
-        <li id="politics-mobile">
-          <a href="./category.html" id="politics-link">Politics</a>
-        </li>
-        <li id="sports-mobile">
-          <a href="./category.html" id="sports-link">Sports</a>
-        </li>
-        <li id="culture-mobile">
-          <a href="./category.html" id="culture-link">Culture</a>
-        </li>
-        <li id="business-mobile">
-          <a href="./category.html" id="business-link">Business</a>
-        </li>
-        <li id="entertainment-mobile">
-          <a href="./category.html" id="entertainment-link">Entertainment</a>
-        </li>
-        <li id="science-technology-mobile">
-          <a href="./category.html" id="science-technology-link">Technology</a>
-        </li>
-      </ul>
-    </div>
+  <div id="container">
+    <header>
+      <div v-for="tab of tabs" :key="tab.name">
+        <Button
+          :text="tab.name"
+          :action="tab.action"
+          :active="page === tab.name"
+        />
+      </div>
+    </header>
+    <section v-if="page === 'posts'">
+      <NewsTable :items="items" :openItem="openItem" />
+      <Pagination
+        class="bg-veryLightGray"
+        v-show="meta"
+        :meta="meta"
+        :message="`${meta?.totalItems} ${
+          meta?.totalItems > 1 ? 'Posts' : 'Post'
+        }`"
+      />
+    </section>
+    <section v-else-if="page === 'users'">
+      <UserTable :items="items" :openItem="openItem" />
+      <Pagination
+        class="bg-veryLightGray"
+        v-show="meta"
+        :meta="meta"
+        :message="`${meta?.totalItems} ${
+          meta?.totalItems > 1 ? 'Users' : 'User'
+        }`"
+      />
+    </section>
   </div>
-  <main id="main">
-    <section id="manage-news">
-      <a href="#" id="manage-news-button" class="manage-button">Manage News</a>
-      <div id="news-buttons" class="news-buttons">
-        <a href="./add-news.html" class="manage-button">Add News</a>
-        <a href="./edit-news.html" class="manage-button">Edit News</a>
-        <a href="#" class="manage-button">Delete News</a>
-      </div>
-    </section>
-    <section id="manage-users">
-      <a href="#" id="manage-user-button" class="manage-button">Manage Users</a>
-      <div id="user-buttons" class="user-buttons">
-        <a href="#" class="manage-button">Add Users</a>
-        <a href="#" class="manage-button">View Users</a>
-        <a href="#" class="manage-button">Delete Users</a>
-      </div>
-    </section>
-  </main>
 </template>
 
 <script>
-import { request } from "../utils/utils";
+import { request, tokenValid } from "../utils/utils";
+import Button from "../components/Button.vue";
+import Accordion from "../components/Accordion.vue";
+import NewsTable from "../components/NewsTable.vue";
+import Pagination from "../components/Pagination.vue";
+import UserTable from "../components/UserTable.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "AdminLanding",
-  components: {},
+  components: {
+    Button,
+    Accordion,
+    NewsTable,
+    Pagination,
+    UserTable,
+  },
   data() {
-    return {};
+    return {
+      tabs: [{ name: "posts", action: this.showPosts }],
+      items: [],
+      meta: null,
+      post: null,
+      page: "posts",
+      categoryId: "",
+      startDate: "",
+      endDate: "",
+    };
   },
   methods: {
-    async getNews(category) {
-      const url = "/news/?category=" + category;
-      const res = await request("GET", url, true);
-      if (res.success) {
-        console.log("success:- ", res.result);
-        return res.result;
-      } else {
-        console.log("error:- ", res);
+    async fetchData() {
+      const { page, categoryId, startDate, endDate } = this;
+      this.$store.commit("updateLoading", true);
+      try {
+        const url =
+          page === "posts"
+            ? `/news?categoryId=${categoryId}&startDate=${startDate}&endDate=${endDate}`
+            : `/users`;
+
+        const response = await request("GET", url, true);
+        if (response?.success) {
+          this.$store.commit("updateLoading", false);
+          return response;
+        } else {
+          this.$store.commit("updateLoading", false);
+          this.$store.commit("updateFailedMessage", {
+            message: response.message,
+            timer: 3000,
+          });
+          return null;
+        }
+      } catch (error) {
+        this.$store.commit("updateLoading", false);
+        this.$store.commit("updateFailedMessage", {
+          message: error?.message || "Failed to fetch",
+          timer: 3000,
+        });
+        return null;
       }
     },
+    async showPosts() {
+      this.page = "posts";
+      this.items = [];
+      const response = await this.fetchData();
+      if (response) {
+        this.meta = response.paging;
+        this.items = response.result;
+      }
+    },
+    async showUsers() {
+      this.page = "users";
+      this.items = [];
+      const response = await this.fetchData();
+      if (response) {
+        this.meta = response.paging;
+        this.items = response.result;
+      }
+    },
+    openItem(item) {
+      this.post = item;
+    },
+    openUser(item) {
+      this.user = item;
+    },
   },
-  async created() {
-    // const category = window.location.href
-    //   .split("?")[1]
-    //   .split("category=")[1]
-    //   .split("&")[0];
-    // const rs = await this.getNews(category);
-    // this.news = rs;
-    // this.meta.current = 1;
-    // this.meta.next = 2;
-    // this.meta.previous = 1;
-    // this.meta.first = 1;
-    // this.meta.last = 1;
+  computed: {
+    ...mapState(),
+  },
+  watch: {
+    user(data) {
+      console.log("user", data);
+    },
+  },
+  async mounted() {
+    const isValidToken = await tokenValid();
+    if (isValidToken) {
+      this.expiredLogin = false;
+    } else {
+      this.expiredLogin = true;
+    }
+
+    const response = await this.fetchData();
+    if (response && response?.result) {
+      this.items = response.result;
+      this.meta = response.paging;
+    }
+
+    // if (this.user && this.user.type === "admin") {
+    this.tabs.push({ name: "users", action: this.showUsers });
+    // }
   },
 };
 </script>
@@ -101,20 +164,21 @@ body {
   align-items: center;
   flex-direction: column;
 }
-main {
+#container {
+  padding: 110px 60px;
+}
+header {
   font-family: "Acme", sans-serif;
   background-color: #2201f907;
-  margin: 110px auto 10px auto;
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  justify-content: flex-end;
   width: 100%;
-  min-height: 70vh;
 }
 section {
   display: flex;
   flex-direction: column;
   padding: 25px 50px;
+  border: 1px solid gray;
 }
 .manage-button {
   background-color: #2201f9;
@@ -144,9 +208,11 @@ section {
   flex-direction: column;
 }
 @media (max-width: 769px) {
-  main {
+  header {
     display: flex;
-    flex-direction: column;
+  }
+  #container {
+    padding: 70px 30px;
   }
 }
 </style>

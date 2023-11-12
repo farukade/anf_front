@@ -1,3 +1,5 @@
+import { store } from "../store";
+
 export const truncate = (str, len = 200) => {
 	let newStr = "";
 	if (!str.length) {
@@ -28,7 +30,7 @@ export const request = async (method, url, authed = false, data) => {
 			  }
 			: {
 					...defaultHeaders,
-					Authorization: `Bearer ${token}`,
+					Authorization: token ? `Bearer ${token}` : undefined,
 			  },
 		body: JSON.stringify(data),
 	});
@@ -43,13 +45,20 @@ export const verifyToken = async () => {
 const checkStatus = async (response) => {
 	if (!response.ok) {
 		console.log(response);
-		// const message = await response.text();
-
-		// const err = JSON.parse(message);
-		// throw Object.freeze({ message: err.message || err.error });
+		const contentType = response.headers.get("content-type");
+		if (contentType && contentType.includes("application/json")) {
+			return response;
+		} else {
+			console.log("Response is not in JSON format");
+			return {
+				json: () => {
+					return { success: false, message: "Response is not in JSON format" };
+				},
+			};
+		}
+	} else {
+		return response;
 	}
-
-	return response;
 };
 
 const parseJSON = (response) => response.json();
@@ -81,7 +90,8 @@ export const logOut = () => {
 	setCookie("token", "", 0);
 	setCookie("username", "", 0);
 	setCookie("email", "", 0);
-	window.location = "/login";
+	store.commit("updateUser", null);
+	window.location = "/admin";
 };
 
 export const logIn = (data) => {
@@ -89,9 +99,30 @@ export const logIn = (data) => {
 	setCookie("token", token, 0.2);
 	setCookie("username", username, 0.2);
 	setCookie("email", email, 0.2);
-	window.location = "/admin/landing";
+	store.commit("updateUser", data);
+	window.location = "/admin";
+};
+
+export const tokenValid = async () => {
+	try {
+		const response = await verifyToken();
+		if (response?.success) {
+			store.commit("updateIsVerified", true);
+			store.commit("updateLoading", false);
+			return true;
+		} else {
+			store.commit("updateIsVerified", false);
+			store.commit("updateLoading", false);
+			return false;
+		}
+	} catch (error) {
+		console.log(error);
+		store.commit("updateIsVerified", false);
+		store.commit("updateLoading", false);
+		return false;
+	}
 };
 
 export const constants = {
-	baseUrl: "http://localhost:5000",
+	baseUrl: "http://192.168.130.56:5000",
 };

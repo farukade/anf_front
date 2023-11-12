@@ -3,22 +3,43 @@
     <div
       id="modal-back"
       ref="modalBack"
-      :class="{ 'modal-back': $store.getters.getFailedMessage }"
+      :class="{ 'modal-back': $store.getters.getAddingNewPost }"
     >
       <div
         class="modal fade show"
-        :class="{ 'modal-back': $store.getters.getFailedMessage }"
+        :class="{ 'modal-back': $store.getters.getAddingNewPost }"
         id="successModal"
         tabindex="-1"
         role="dialog"
         aria-labelledby="successModalLabel"
         aria-hidden="true"
       >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content w-[300px]">
-            <p class="text-[20px] text-danger text-center p-3 my-3">
-              {{ startCase($store.getters.getFailedMessage) }}
-            </p>
+        <div
+          class="modal-dialog min-w-[1000px] text-primary flex"
+          role="document"
+        >
+          <div class="modal-content mb-10">
+            <div class="modal-header">
+              <h5 class="modal-title">Add News</h5>
+              <button type="button" class="text-primary">
+                <i class="fa-solid fa-close" @click="closeAddNews()"></i>
+              </button>
+            </div>
+            <div class="min-h-[300px]">
+              <QuillEditor theme="snow" />
+            </div>
+            <div class="modal-footer p-2">
+              <button
+                type="button"
+                class="btn btn-secondary active"
+                @click="closeAddNews()"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary active">
+                Save changes
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -27,36 +48,20 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { startCase } from "lodash";
 export default {
-  name: "FailedModal",
+  name: "AddNews",
+  props: {},
   data() {
-    return {
-      startCase,
-    };
+    return {};
   },
-  computed: {
-    ...mapState(["failedMessage"]),
-    storeMessage() {
-      return this.failedMessage.message;
-    },
-    storeTimer() {
-      return this.failedMessage.timer;
-    },
-  },
-  watch: {
-    storeTimer(newValue) {
-      setTimeout(() => {
-        this.$store.commit("updateFailedMessage", {
-          message: "",
-          timer: 0,
-        });
-      }, newValue);
+  methods: {
+    closeAddNews() {
+      this.$store.commit("updateAddingNewPost", false);
     },
   },
 };
 </script>
+
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Acme&display=swap");
@@ -164,4 +169,3 @@ input {
   border: none;
 }
 </style>
-

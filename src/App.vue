@@ -3,6 +3,7 @@
     <SuccessModal />
     <FailedModal />
     <ProfileModal />
+    <AddNews />
     <div
       id="loader"
       class="text-black"
@@ -26,6 +27,7 @@ import Login from "./views/LoginView.vue";
 import SuccessModal from "./components/SuccessModal.vue";
 import FailedModal from "./components/FailedModal.vue";
 import ProfileModal from "./components/ProfileModal.vue";
+import AddNews from "./components/AddNews.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -37,6 +39,7 @@ export default {
     SuccessModal,
     FailedModal,
     ProfileModal,
+    AddNews,
   },
   data() {
     return {

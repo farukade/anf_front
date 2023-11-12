@@ -8,11 +8,13 @@
 		"start:dev": "vue-cli-service build --mode development"
 	},
 	"dependencies": {
+		"@vueup/vue-quill": "^1.2.0",
 		"autoprefixer": "^10",
 		"core-js": "^3.8.3",
 		"lodash": "^4.17.21",
 		"moment": "^2.29.4",
 		"postcss": "^8",
+		"quill-blot-formatter": "^1.0.5",
 		"tailwindcss": "^3",
 		"vue": "^3.2.13",
 		"vue-router": "^4.0.3",

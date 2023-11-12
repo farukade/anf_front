@@ -13,6 +13,7 @@ const state = {
 	profileOpen: false,
 	loading: false,
 	isVerified: true,
+	addingNewPost: false,
 };
 
 const getters = {
@@ -40,6 +41,9 @@ const getters = {
 	getProfileOpen(state) {
 		return state.profileOpen;
 	},
+	getAddingNewPost(state) {
+		return state.addingNewPost;
+	},
 };
 
 const mutations = {
@@ -60,6 +64,9 @@ const mutations = {
 	},
 	updateProfileOpen(state, data) {
 		state.profileOpen = data;
+	},
+	updateAddingNewPost(state, data) {
+		state.addingNewPost = data;
 	},
 };
 

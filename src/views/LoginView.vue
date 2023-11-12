@@ -5,7 +5,7 @@
     </div>
     <div id="form-container">
       <form id="form">
-        <h2 id="login-form-header">ANF-tv Admin Login</h2>
+        <h2 id="login-form-header">Admin Login</h2>
         <div id="response-container">
           <p id="response"></p>
         </div>
@@ -27,16 +27,7 @@
             id="password-input"
           />
         </div>
-        <div id="remember">
-          <label for="remember" id="remember"> Remember me </label>
-          <input
-            @input="(e) => getVal(e, 'remember')"
-            type="checkbox"
-            name="checkbox"
-            id="checkbox"
-          />
-        </div>
-        <div id="submit">
+        <div id="submit" class="py-3">
           <input
             type="submit"
             @click="(e) => login(e)"
@@ -51,7 +42,7 @@
 
 <script>
 // @ is an alias to /src
-import { request } from "../utils/utils";
+import { logIn, request, verifyToken } from "../utils/utils";
 
 export default {
   name: "LoginView",
@@ -60,7 +51,7 @@ export default {
     return {
       username: String,
       password: String,
-      remember: false,
+      expiredLogin: true,
     };
   },
   methods: {
@@ -74,13 +65,33 @@ export default {
       try {
         const res = await request("POST", url, false, data);
         if (res.success) {
-          console.log("success:- ", res.result);
-          return res.result;
+          const { result } = res;
+
+          this.$store.commit("updateSuccessMessage", {
+            message: "Login Success!",
+            timer: 3000,
+          });
+
+          this.$store.commit("updateUser", result);
+          this.$store.commit("updateIsVerified", true);
+
+          setTimeout(() => {
+            logIn(result);
+          }, 3000);
+          return;
         } else {
-          console.log("error:- ", res);
+          this.$store.commit("updateFailedMessage", {
+            message: res.message,
+            timer: 3000,
+          });
+          this.$store.commit("updateIsVerified", false);
         }
       } catch (error) {
-        console.log(error);
+        this.$store.commit("updateFailedMessage", {
+          message: error?.message || "Login Failed",
+          timer: 3000,
+        });
+        this.$store.commit("updateIsVerified", false);
       }
     },
     getVal(e, name) {
@@ -93,18 +104,24 @@ export default {
           case "password":
             this.password = e.target.value;
             break;
-
-          case "remember":
-            console.log(e.target.checked);
-            this.remember = e.target.checked ? true : false;
-            break;
         }
       }
     },
   },
-  async created() {
-    this.rememberMe = false;
+  async mounted() {
+    const response = await verifyToken();
+    if (response.success) {
+      this.expiredLogin = false;
+      window.location = "/admin/landing";
+      this.$store.commit("updateIsVerified", true);
+      this.$store.commit("updateLoading", false);
+    } else {
+      this.expiredLogin = true;
+      this.$store.commit("updateIsVerified", false);
+      this.$store.commit("updateLoading", false);
+    }
   },
+  async created() {},
 };
 </script>
 
@@ -119,7 +136,7 @@ export default {
 body {
   font-family: "Acme", sans-serif;
   background-repeat: no-repeat;
-  /* background-image: url("https://source.unsplash.com/random"); */
+  background-image: url("https://source.unsplash.com/random");
   background-size: cover;
 }
 .modal-back {

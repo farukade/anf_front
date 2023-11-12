@@ -3,6 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import SingleView from "../views/SingleView.vue";
 import LoginView from "../views/LoginView.vue";
 import SectionView from "../views/SectionView.vue";
+import AdminLanding from "../views/AdminLanding.vue";
 
 const routes = [
 	{
@@ -17,13 +18,18 @@ const routes = [
 	},
 	{
 		path: "/section",
-		name: "Section",
+		name: "section",
 		component: SectionView,
 	},
 	{
 		path: "/admin/login",
 		name: "login",
 		component: LoginView,
+	},
+	{
+		path: "/admin/landing",
+		name: "admin",
+		component: AdminLanding,
 	},
 ];
 

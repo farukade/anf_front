@@ -11,33 +11,50 @@
         <div class="hidden lg:flex text-l text-anfDeepBlue flex space-x-6">
           <Link :key="item" v-for="item of menu" :text="item" :link="item" />
         </div>
-        <!-- Search -->
-        <div
-          class="flex justify-center align-center text-l md:p-2 bg-anfDeepBlue rounded p-1 text-white"
-        >
-          <button
-            v-if="!searchOpen"
-            class="hidden sm:block md:hidden xl:hidden lg:hidden px-2"
+        <div class="flex space-x-3">
+          <!-- Search -->
+          <div
+            class="flex cursor-pointer justify-center align-center text-l md:p-2 bg-anfDeepBlue rounded p-1 text-white"
           >
-            Search
-          </button>
-          <i
-            v-if="!searchOpen"
-            @click="toggleSearch"
-            class="fa-solid fa-magnifying-glass"
-          ></i>
-          <i
-            v-if="searchOpen"
-            @click="toggleSearch"
-            class="fa-solid fa-xmark"
-          ></i>
+            <button
+              v-if="!searchOpen"
+              class="hidden sm:block md:hidden xl:hidden lg:hidden px-2"
+            >
+              Search
+            </button>
+            <i
+              v-if="!searchOpen"
+              @click="toggleSearch"
+              class="fa-solid fa-magnifying-glass"
+            ></i>
+            <i
+              v-if="searchOpen"
+              @click="toggleSearch"
+              class="fa-solid fa-xmark"
+            ></i>
+          </div>
+          <!-- Profile -->
+          <div
+            v-if="isAdmin"
+            class="flex cursor-pointer justify-center align-center text-l md:p-2 bg-anfDeepBlue rounded p-1 text-white"
+          >
+            <button class="hidden sm:block md:hidden xl:hidden lg:hidden px-2">
+              Profile
+            </button>
+            <i v-if="!profileOpen" class="fa-solid fa-user"></i>
+            <i
+              v-if="profileOpen"
+              @click="openProfile"
+              class="fa-regular fa-user"
+            ></i>
+          </div>
         </div>
         <!-- Hamburger Icon -->
         <button
           id="menu-btn"
           :class="`${
             isClicked ? 'open' : ''
-          } block hamburger lg:hidden focus:outline-none`"
+          } block hamburger cursor-pointer lg:hidden focus:outline-none`"
           @click="hamburgerClick"
         >
           <span class="hamburger-top bg-anfBlue"></span>
@@ -80,12 +97,15 @@ export default {
     Link,
     Search,
   },
-  props: {},
+  props: {
+    isAdmin: Boolean,
+  },
   data() {
     return {
       menu: [],
       isClicked: false,
       searchOpen: false,
+      profileOpen: false,
       hamburgerClick: () => {
         this.isClicked = !this.isClicked;
       },
@@ -94,6 +114,9 @@ export default {
       },
       linkClicked: () => {
         this.isClicked = false;
+      },
+      openProfile: () => {
+        this.profileOpen = !this.profileOpen;
       },
     };
   },

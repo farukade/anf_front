@@ -37,7 +37,6 @@
           <!-- Profile -->
           <div>
             <div
-              v-if="isAdmin"
               class="flex position-relative cursor-pointer justify-center align-center text-l md:p-2 bg-anfDeepBlue rounded p-1 text-white dropdown"
             >
               <button

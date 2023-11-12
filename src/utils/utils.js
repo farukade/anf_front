@@ -124,5 +124,5 @@ export const tokenValid = async () => {
 };
 
 export const constants = {
-	baseUrl: "https://anftv.onrender.com/",
+	baseUrl: "https://anftv.onrender.com",
 };

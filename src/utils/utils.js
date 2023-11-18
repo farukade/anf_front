@@ -1,4 +1,5 @@
 import { store } from "../store";
+import router from "../router";
 
 export const truncate = (str, len = 200) => {
 	let newStr = "";
@@ -91,7 +92,7 @@ export const logOut = () => {
 	setCookie("username", "", 0);
 	setCookie("email", "", 0);
 	store.commit("updateUser", null);
-	window.location = "/admin";
+	router.push("/admin");
 };
 
 export const logIn = (data) => {
@@ -100,7 +101,7 @@ export const logIn = (data) => {
 	setCookie("username", username, 0.2);
 	setCookie("email", email, 0.2);
 	store.commit("updateUser", data);
-	window.location = "/admin";
+	router.push("/admin");
 };
 
 export const tokenValid = async () => {
@@ -124,5 +125,6 @@ export const tokenValid = async () => {
 };
 
 export const constants = {
+	// baseUrl: "http://localhost:5000",
 	baseUrl: "https://anftv.onrender.com",
 };

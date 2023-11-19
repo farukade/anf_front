@@ -73,7 +73,7 @@ body {
   background-size: cover;
 }
 .modal-back {
-  position: absolute;
+  position: fixed;
   background-color: rgba(0, 0, 0, 0.651);
   width: 100%;
   height: 100%;

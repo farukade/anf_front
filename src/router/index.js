@@ -1,35 +1,44 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {
+	createRouter,
+	createWebHashHistory,
+	createWebHistory,
+} from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import SingleView from "../views/SingleView.vue";
-import LoginView from "../views/LoginView.vue";
 import SectionView from "../views/SectionView.vue";
 import AdminLanding from "../views/AdminLanding.vue";
+import NotFoundComponent from "../views/NotFoundComponent.vue";
 
 const routes = [
 	{
 		path: "/",
-		name: "home",
 		component: HomeView,
 	},
 	{
 		path: "/single",
-		name: "single",
 		component: SingleView,
 	},
 	{
 		path: "/section",
-		name: "section",
 		component: SectionView,
 	},
 	{
 		path: "/admin",
-		name: "admin",
 		component: AdminLanding,
+	},
+	{
+		path: "/admin",
+		component: AdminLanding,
+	},
+	{
+		path: "/:pathMatch(.*)",
+		component: NotFoundComponent,
 	},
 ];
 
 const router = createRouter({
-	history: createWebHistory(process.env.BASE_URL),
+	history: createWebHashHistory(),
+	// history: createWebHistory(),
 	routes,
 });
 

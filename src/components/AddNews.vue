@@ -18,17 +18,43 @@
           class="modal-dialog min-w-[1000px] text-primary flex"
           role="document"
         >
-          <div class="modal-content mb-10">
+          <div id="form" class="modal-content mb-10 p-3">
             <div class="modal-header">
               <h5 class="modal-title">Add News</h5>
-              <button type="button" class="text-primary">
+              <button type="button" class="text-danger">
                 <i class="fa-solid fa-close" @click="closeAddNews()"></i>
               </button>
             </div>
-            <div class="min-h-[300px]">
-              <QuillEditor theme="snow" />
+            <div class="row p-3 w-full">
+              <div class="w-1/2 p-2">
+                <label for="title">Title</label>
+                <input
+                  name="title"
+                  type="text"
+                  class="form-control"
+                  placeholder="Enter subject ..."
+                />
+              </div>
+              <div class="w-1/2 p-2">
+                <label for="category">Category</label>
+                <input
+                  name="category"
+                  type="text"
+                  class="form-control"
+                  placeholder="Select category ..."
+                />
+              </div>
             </div>
-            <div class="modal-footer p-2">
+            <div class="min-h-[300px] text-secondary">
+              <!-- <QuillEditor
+                v-model:content="content"
+                toolbar="full"
+                :options="options"
+              /> -->
+              <!-- <div id="editor" toolbar="full"></div> -->
+              <div ref="quillContainer" class="quill-container"></div>
+            </div>
+            <div class="modal-footer p-2 z-50 cursor-pointer">
               <button
                 type="button"
                 class="btn btn-secondary active"
@@ -48,124 +74,124 @@
 </template>
 
 <script>
-export default {
+import { defineComponent } from "vue";
+import { Quill } from "@vueup/vue-quill";
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import ImageUploader from "quill-image-uploader";
+import { notifyError, request, uploadRequest } from "../utils/utils";
+
+export default defineComponent({
   name: "AddNews",
   props: {},
   data() {
-    return {};
+    return {
+      content: {},
+    };
+  },
+  components: {},
+  setup: () => {
+    const modules = {
+      name: "imageUploader",
+      module: ImageUploader,
+      options: {
+        upload: (file) => {
+          return new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append("image", file);
+
+            const uri = "/upload";
+            uploadRequest("POST", uri, formData)
+              .then((data) => {
+                console.log("data", data);
+                if (data.success) {
+                  resolve(data.result.url);
+                } else {
+                  reject("Upload failed");
+                }
+              })
+              .catch((error) => {
+                console.log("error", error);
+                reject("Upload failed");
+              });
+          });
+        },
+      },
+    };
+    return { modules };
   },
   methods: {
     closeAddNews() {
       this.$store.commit("updateAddingNewPost", false);
     },
+    async savePost() {
+      try {
+        const data = {};
+        const uri = "/news";
+        const rs = await request("POST", uri, true, data);
+        if (rs.success) {
+          notifySuccess("Post added!");
+          this.closeAddNews();
+        } else {
+          notifyError(rs.message);
+        }
+      } catch (error) {
+        console.log(error);
+        notifyError(error.message);
+      }
+    },
   },
-};
+  mounted() {
+    this.quill = new Quill(this.$refs.quillContainer, {
+      debug: "info",
+      modules: {
+        toolbar: [
+          ["bold", "italic", "underline", "strike"],
+          [{ header: 1 }, { header: 2 }],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ script: "sub" }, { script: "super" }],
+          [{ indent: "-1" }, { indent: "+1" }],
+          [{ direction: "rtl" }],
+          [{ size: ["small", false, "large", "huge"] }],
+          [{ color: [] }, { background: [] }],
+          [{ font: [] }],
+          [{ align: [] }],
+          ["clean"],
+          ["link", "image", "video"],
+        ],
+      },
+      theme: "snow",
+    });
+    const defaultContents = [{ insert: "Hello, this is the default content." }];
+    this.quill.setContents(defaultContents);
+
+    // Optionally disable editor
+    // this.quill.disable();
+  },
+  beforeUnmount() {
+    if (this.quill) {
+      this.quill.destroy();
+    }
+  },
+  created() {
+    if (this.quill) {
+      this.quill.on("editor-change", function (eventName, ...args) {
+        if (eventName === "text-change") {
+          // args[0] will be delta
+        } else if (eventName === "selection-change") {
+          // args[0] will be old range
+        }
+      });
+    }
+  },
+});
 </script>
 
-
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Acme&display=swap");
-
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
+#form {
+  overflow-y: scroll;
+  max-height: 80vh;
 }
-body {
-  font-family: "Acme", sans-serif;
-  background-repeat: no-repeat;
-  /* background-image: url("https://source.unsplash.com/random"); */
-  background-size: cover;
-}
-.modal-back {
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.651);
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.modal-on {
-  position: absolute;
-  min-height: 150px;
-  min-width: 250px;
-  background-color: #fff;
-  font-size: 30px;
-  font-family: Arial, Helvetica, sans-serif;
-  color: green;
-  text-align: center;
-  justify-self: center;
-  align-self: center;
-  padding: 50px;
-}
-.modal-off {
-  display: none;
-}
-#form-container {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-h2 {
-  width: 100%;
-  text-align: center;
-  margin: 20px auto;
-}
-form {
-  width: 20%;
-  min-width: 300px;
-  background-color: #2201f9be;
-  padding: 40px;
-  color: #fff;
-  border-radius: 5px;
-}
-#response {
-  color: rgb(255, 77, 77);
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: Arial, Helvetica, sans-serif;
-  top: 10px;
-  margin: 10px auto;
-  width: 100%;
-  height: 30px;
-  text-align: center;
-}
-#username-input {
-  width: 100%;
-  height: 35px;
-  margin: 5px 0 20px 0;
-}
-#password-input {
-  width: 100%;
-  height: 35px;
-  margin: 5px 0 20px 0;
-}
-label {
-  margin-left: 5px;
-  margin-right: 10px;
-}
-#login {
-  cursor: pointer;
-  border: none;
-  box-shadow: none;
-  border-radius: 5%;
-  width: 100%;
-  height: 35px;
-  background-color: red;
-  color: #fff;
-  margin: 5px 0 20px 0;
-  font-size: 20px;
-}
-input:focus {
-  outline: none;
-  border: 2px solid red;
-}
-input {
-  padding: 5px;
-  border-radius: 5px;
-  border: none;
+.quill-container .ql-editor {
+  min-height: 300px;
 }
 </style>

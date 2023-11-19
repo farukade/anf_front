@@ -9,5 +9,5 @@ import "@vueup/vue-quill/dist/vue-quill.snow.css";
 const app = createApp(App);
 app.use(router);
 app.use(store);
-app.component("QuillEditor", QuillEditor);
+// app.component("QuillEditor", QuillEditor);
 app.mount("#app");

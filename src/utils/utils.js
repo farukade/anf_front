@@ -39,6 +39,19 @@ export const request = async (method, url, authed = false, data) => {
 	return parseJSON(result);
 };
 
+export const uploadRequest = async (method, url, data) => {
+	const token = getCookie("token");
+	const response = await fetch(`${constants.baseUrl}${url}`, {
+		method: method,
+		headers: {
+			Authorization: token ? `Bearer ${token}` : undefined,
+		},
+		body: data,
+	});
+	const result = await checkStatus(response);
+	return parseJSON(result);
+};
+
 export const verifyToken = async () => {
 	return await request("POST", "/users/verify/login", true);
 };
@@ -125,6 +138,22 @@ export const tokenValid = async () => {
 };
 
 export const constants = {
-	// baseUrl: "http://localhost:5000",
-	baseUrl: "https://anftv.onrender.com",
+	baseUrl: "http://localhost:5000",
+	domainUrl: "http://localhost:3000",
+	liveDomainUrl: "http://localhost:3000",
+	// baseUrl: "https://anftv.onrender.com",
+};
+
+export const notifySuccess = (message, timer = 3000) => {
+	store.commit("updateSuccessMessage", {
+		message: message || "Success!",
+		timer,
+	});
+};
+
+export const notifyError = (message, timer = 3000) => {
+	store.commit("updateFailedMessage", {
+		message: message || "Failed!",
+		timer,
+	});
 };

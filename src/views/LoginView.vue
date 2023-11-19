@@ -42,7 +42,13 @@
 
 <script>
 // @ is an alias to /src
-import { logIn, request, tokenValid } from "../utils/utils";
+import {
+  logIn,
+  notifyError,
+  notifySuccess,
+  request,
+  tokenValid,
+} from "../utils/utils";
 
 export default {
   name: "LoginView",
@@ -66,29 +72,17 @@ export default {
         const res = await request("POST", url, false, data);
         if (res.success) {
           const { result } = res;
-
-          this.$store.commit("updateSuccessMessage", {
-            message: "Login Success!",
-            timer: 3000,
-          });
-
+          notifySuccess("Login Success!");
           this.$store.commit("updateUser", result);
           this.$store.commit("updateIsVerified", true);
-
           logIn(result);
           return;
         } else {
-          this.$store.commit("updateFailedMessage", {
-            message: res.message,
-            timer: 3000,
-          });
+          notifyError(res.message);
           this.$store.commit("updateIsVerified", false);
         }
       } catch (error) {
-        this.$store.commit("updateFailedMessage", {
-          message: error?.message || "Login Failed",
-          timer: 3000,
-        });
+        notifyError(error.message);
         this.$store.commit("updateIsVerified", false);
       }
     },
@@ -133,7 +127,7 @@ body {
   background-size: cover;
 }
 .modal-back {
-  position: absolute;
+  position: fixed;
   background-color: rgba(0, 0, 0, 0.651);
   width: 100%;
   height: 100%;

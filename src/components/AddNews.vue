@@ -18,7 +18,7 @@
           class="modal-dialog min-w-[1000px] text-primary flex"
           role="document"
         >
-          <div id="form" class="modal-content mb-10 p-3">
+          <div id="form" class="modal-content mb-10 mr-2 p-3">
             <div>
               <div class="modal-header">
                 <h5 class="modal-title">Add News</h5>
@@ -29,10 +29,11 @@
               <div class="row p-0 m-1 w-full">
                 <div class="p-1">
                   <label for="title">Title</label>
-                  <input
+                  <textarea
+                    id="title"
                     name="title"
                     type="text"
-                    class="form-control"
+                    class="form-control min-h-10"
                     placeholder="Enter subject ..."
                   />
                 </div>
@@ -47,7 +48,7 @@
                       :key="category.id"
                       v-for="category of categories"
                     >
-                      {{ category.name }}
+                      {{ startCase(category.name) }}
                     </option>
                   </select>
                 </div>
@@ -127,6 +128,7 @@ import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import ImageUploader from "quill-image-uploader";
 import { notifyError, request, uploadRequest } from "../utils/utils";
 import BlotFormatter from "quill-blot-formatter";
+import { startCase } from "lodash";
 
 Quill.register("modules/imageUploader", ImageUploader);
 Quill.register("modules/blotFormatter", BlotFormatter);
@@ -137,17 +139,30 @@ export default defineComponent({
     return {
       content: {},
       quill: null,
-      categories: [
-        { id: 1, name: "One" },
-        { id: 2, name: "Two" },
-        { id: 3, name: "Three" },
-      ],
+      categories: [],
+      startCase,
     };
   },
   components: {},
   methods: {
     closeAddNews() {
       this.$store.commit("updateAddingNewPost", false);
+    },
+    async fetchCategories() {
+      try {
+        const uri = "/categories";
+        const rs = await request("GET", uri, true);
+        if (rs.success) {
+          return rs.result;
+        } else {
+          notifyError(rs.message);
+          return [];
+        }
+      } catch (error) {
+        console.log(error);
+        notifyError(error.message);
+        return [];
+      }
     },
     async savePost() {
       try {
@@ -290,7 +305,7 @@ export default defineComponent({
       this.quill.destroy();
     }
   },
-  created() {
+  async created() {
     if (this.quill) {
       this.quill.on("editor-change", function (eventName, ...args) {
         if (eventName === "text-change") {
@@ -300,11 +315,16 @@ export default defineComponent({
         }
       });
     }
+    this.categories = await this.fetchCategories();
   },
 });
 </script>
 
 <style>
+#title {
+  min-height: 70px;
+  max-height: 70px;
+}
 #form {
   overflow-y: scroll;
   max-height: 80vh;

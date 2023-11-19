@@ -138,10 +138,8 @@ export const tokenValid = async () => {
 };
 
 export const constants = {
-	baseUrl: "http://localhost:5000",
-	domainUrl: "http://localhost:3000",
-	liveDomainUrl: "http://localhost:3000",
-	// baseUrl: "https://anftv.onrender.com",
+	// baseUrl: "http://localhost:5000",
+	baseUrl: "https://anftv.onrender.com",
 };
 
 export const notifySuccess = (message, timer = 3000) => {
